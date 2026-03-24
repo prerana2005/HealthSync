@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HealthSync — Integrated Hospital Management System for modern healthcare facilities">
+    <title>HealthSync — Hospital Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+</head>
+<body>
+
+<!-- =============== LOGIN PAGE =============== -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="logo-icon">🏥</div>
+            <h1>HealthSync</h1>
+            <p>Hospital Management System</p>
+        </div>
+        <div id="loginAlert" class="hidden"></div>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" placeholder="admin@healthsync.in" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+                Sign In
+            </button>
+        </form>
+        <p style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:13px;">
+            New patient? <a href="#" onclick="showRegister()" style="color:var(--accent-purple); text-decoration:none; font-weight:600;">Register here</a>
+        </p>
+    </div>
+</div>
+
+<!-- =============== REGISTER PAGE =============== -->
+<div id="registerPage" class="login-container hidden">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="logo-icon">🏥</div>
+            <h1>HealthSync</h1>
+            <p>Patient Registration</p>
+        </div>
+        <div id="registerAlert" class="hidden"></div>
+        <form id="registerForm" onsubmit="return handleRegister(event)">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="regName" placeholder="Your full name" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="you@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="regPhone" placeholder="9876543210" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create password" required>
+                </div>
+                <div class="form-group">
+                    <label>Blood Group</label>
+                    <select id="regBloodGroup">
+                        <option value="">Select</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>O+</option><option>O-</option>
+                        <option>AB+</option><option>AB-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Emergency Contact</label>
+                <input type="tel" id="regEmergency" placeholder="Emergency phone number">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+        <p style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:13px;">
+            Already registered? <a href="#" onclick="showLogin()" style="color:var(--accent-purple); text-decoration:none; font-weight:600;">Sign in</a>
+        </p>
+    </div>
+</div>
+
+<!-- =============== MAIN APP =============== -->
+<div id="appPage" class="app-container hidden">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="brand-icon">🏥</div>
+                <div class="brand-text">
+                    <h2>HealthSync</h2>
+                    <span>Hospital System</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+                    <span class="nav-icon">📊</span> Dashboard
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Clinical</div>
+                <div class="nav-item" onclick="showPage('patients')" id="nav-patients">
+                    <span class="nav-icon">👥</span> Patients
+                </div>
+                <div class="nav-item" onclick="showPage('doctors')" id="nav-doctors">
+                    <span class="nav-icon">🩺</span> Doctors
+                </div>
+                <div class="nav-item" onclick="showPage('appointments')" id="nav-appointments">
+                    <span class="nav-icon">📅</span> Appointments
+                </div>
+                <div class="nav-item" onclick="showPage('records')" id="nav-records">
+                    <span class="nav-icon">📋</span> Medical Records
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Administration</div>
+                <div class="nav-item" onclick="showPage('pharmacy')" id="nav-pharmacy">
+                    <span class="nav-icon">💊</span> Pharmacy
+                </div>
+                <div class="nav-item" onclick="showPage('billing')" id="nav-billing">
+                    <span class="nav-icon">💳</span> Billing
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <div class="user-details">
+                    <div class="name" id="userName">Admin User</div>
+                    <div class="role" id="userRole">Administrator</div>
+                </div>
+            </div>
+            <div class="nav-item" onclick="logout()" style="margin-top:8px; color:var(--accent-rose);">
+                <span class="nav-icon">🚪</span> Sign Out
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="page-dashboard" class="page-section active">
+            <div class="top-bar">
+                <h1>Welcome back, <span id="welcomeName">Admin</span> 👋</h1>
+            </div>
+            <div class="stat-grid" id="statsGrid">
+                <div class="stat-card purple">
+                    <div class="stat-header">
+                        <div><div class="stat-label">Total Patients</div><div class="stat-value" id="statPatients">-</div></div>
+                        <div class="stat-icon">👥</div>
+                    </div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-header">
+                        <div><div class="stat-label">Total Doctors</div><div class="stat-value" id="statDoctors">-</div></div>
+                        <div class="stat-icon">🩺</div>
+                    </div>
+                </div>
+                <div class="stat-card emerald">
+                    <div class="stat-header">
+                        <div><div class="stat-label">Appointments Today</div><div class="stat-value" id="statAppointments">-</div></div>
+                        <div class="stat-icon">📅</div>
+                    </div>
+                </div>
+                <div class="stat-card amber">
+                    <div class="stat-header">
+                        <div><div class="stat-label">Pending Bills</div><div class="stat-value" id="statPending">-</div></div>
+                        <div class="stat-icon">💳</div>
+                    </div>
+                </div>
+                <div class="stat-card rose">
+                    <div class="stat-header">
+                        <div><div class="stat-label">Low Stock Alerts</div><div class="stat-value" id="statLowStock">-</div></div>
+                        <div class="stat-icon">⚠️</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Recent Appointments</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th>
+                        </tr></thead>
+                        <tbody id="dashAppointments"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PATIENTS ===== -->
+        <section id="page-patients" class="page-section">
+            <div class="top-bar">
+                <h1>Patient <span>Management</span></h1>
+                <div class="top-bar-actions">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" id="patientSearch" placeholder="Search patients..." oninput="searchPatients(this.value)">
+                    </div>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>All Patients</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Patient ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Blood Group</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="patientsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== DOCTORS ===== -->
+        <section id="page-doctors" class="page-section">
+            <div class="top-bar">
+                <h1>Doctor <span>Directory</span></h1>
+                <div class="top-bar-actions">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" id="doctorSearch" placeholder="Search by name or specialization..." oninput="searchDoctors(this.value)">
+                    </div>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>All Doctors</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Doctor ID</th><th>Name</th><th>Specialization</th><th>Department</th><th>Fee (₹)</th><th>Status</th>
+                        </tr></thead>
+                        <tbody id="doctorsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== APPOINTMENTS ===== -->
+        <section id="page-appointments" class="page-section">
+            <div class="top-bar">
+                <h1>Appointment <span>Scheduling</span></h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-primary" onclick="showBookAppointment()">+ Book Appointment</button>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>All Appointments</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="appointmentsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MEDICAL RECORDS ===== -->
+        <section id="page-records" class="page-section">
+            <div class="top-bar">
+                <h1>Medical <span>Records</span></h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-primary" onclick="showCreateRecord()">+ New Record</button>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Electronic Medical Records</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Record ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Status</th><th>Date</th>
+                        </tr></thead>
+                        <tbody id="recordsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PHARMACY ===== -->
+        <section id="page-pharmacy" class="page-section">
+            <div class="top-bar">
+                <h1>Pharmacy & <span>Inventory</span></h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-primary" onclick="showAddMedicine()">+ Add Medicine</button>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Medicine Inventory</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>ID</th><th>Medicine</th><th>Generic Name</th><th>Stock</th><th>Price (₹)</th><th>Expiry</th><th>Status</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="pharmacyList"><tr><td colspan="8"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== BILLING ===== -->
+        <section id="page-billing" class="page-section">
+            <div class="top-bar">
+                <h1>Billing & <span>Invoices</span></h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-primary" onclick="showCreateInvoice()">+ Generate Invoice</button>
+                </div>
+            </div>
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>All Invoices</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Bill ID</th><th>Patient</th><th>Total (₹)</th><th>Status</th><th>Date</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="billingList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- =============== MODAL CONTAINER =============== -->
+<div id="modalContainer" class="hidden"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
