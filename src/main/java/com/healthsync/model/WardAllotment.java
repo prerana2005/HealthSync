@@ -79,4 +79,18 @@ public class WardAllotment {
         this.dischargeDate = LocalDate.now();
         if (this.ward != null) this.ward.freeBed();
     }
+
+    /**
+     * Transfer patient to ICU — marks allotment as ICU and updates status.
+     * State transition: ACTIVE → TRANSFERRED (to ICU ward).
+     */
+    public void transferToICU() {
+        this.isICU = true;
+        this.status = AllotmentStatus.TRANSFERRED;
+    }
+
+    /** Get current status as a String (used by UI/API). */
+    public String getStatusName() {
+        return this.status.name();
+    }
 }

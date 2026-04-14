@@ -48,10 +48,25 @@ public class Invoice {
     @Column(name = "insurance_claim", nullable = false, precision = 10, scale = 2)
     private BigDecimal insuranceClaim = BigDecimal.ZERO;
 
+    @Column(name = "insurance_provider", length = 100)
+    private String insuranceProvider;
+
+    @Column(name = "insurance_policy_no", length = 50)
+    private String insurancePolicyNo;
+
+    @Column(name = "insurance_coverage", precision = 10, scale = 2)
+    private BigDecimal insuranceCoverage = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "claim_status", nullable = false)
+    private ClaimStatus claimStatus = ClaimStatus.NOT_CLAIMED;
+
     @Column(name = "generated_by", length = 10)
     private String generatedBy;
 
     public enum PaymentStatus { PAID, PENDING, PARTIALLY_PAID }
+
+    public enum ClaimStatus { NOT_CLAIMED, SUBMITTED, APPROVED, REJECTED }
 
     @PrePersist
     protected void onCreate() { if (generatedDate == null) generatedDate = LocalDateTime.now(); }
@@ -89,6 +104,14 @@ public class Invoice {
     public void setPaidDate(LocalDateTime paidDate) { this.paidDate = paidDate; }
     public BigDecimal getInsuranceClaim() { return insuranceClaim; }
     public void setInsuranceClaim(BigDecimal insuranceClaim) { this.insuranceClaim = insuranceClaim; }
+    public String getInsuranceProvider() { return insuranceProvider; }
+    public void setInsuranceProvider(String insuranceProvider) { this.insuranceProvider = insuranceProvider; }
+    public String getInsurancePolicyNo() { return insurancePolicyNo; }
+    public void setInsurancePolicyNo(String insurancePolicyNo) { this.insurancePolicyNo = insurancePolicyNo; }
+    public BigDecimal getInsuranceCoverage() { return insuranceCoverage; }
+    public void setInsuranceCoverage(BigDecimal insuranceCoverage) { this.insuranceCoverage = insuranceCoverage; }
+    public ClaimStatus getClaimStatus() { return claimStatus; }
+    public void setClaimStatus(ClaimStatus claimStatus) { this.claimStatus = claimStatus; }
     public String getGeneratedBy() { return generatedBy; }
     public void setGeneratedBy(String generatedBy) { this.generatedBy = generatedBy; }
 }

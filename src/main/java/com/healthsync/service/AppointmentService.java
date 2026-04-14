@@ -98,7 +98,7 @@ public class AppointmentService {
         // Observer pattern: notify patient — state SCHEDULED triggers notification
         notificationObserver.onEvent(
                 patient.getUser(),
-                Notification.NotifType.APPOINTMENT,
+                Notification.NotifType.APPOINTMENT_REMINDER,
                 "Appointment Confirmed",
                 "Your appointment with " + doctor.getUser().getFullName()
                         + " is confirmed for " + date + " at " + slot.getStartTime() + "."
@@ -140,7 +140,7 @@ public class AppointmentService {
         // Observer: notify cancellation
         notificationObserver.onEvent(
                 appt.getPatient().getUser(),
-                Notification.NotifType.APPOINTMENT,
+                Notification.NotifType.APPOINTMENT_REMINDER,
                 "Appointment Cancelled",
                 "Your appointment on " + appt.getAppointmentDate() + " has been cancelled."
         );

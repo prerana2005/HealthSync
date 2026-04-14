@@ -32,7 +32,7 @@ public class Notification {
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;
 
-    public enum NotifType { LAB_RESULT, APPOINTMENT, BILLING, GENERAL }
+    public enum NotifType { LAB_REPORT, APPOINTMENT_REMINDER, BILLING, GENERAL }
 
     @PrePersist
     protected void onCreate() { if (sentAt == null) sentAt = LocalDateTime.now(); }

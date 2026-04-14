@@ -137,6 +137,9 @@
                 <div class="nav-item" onclick="showPage('billing')" id="nav-billing">
                     <span class="nav-icon">💳</span> Billing
                 </div>
+                <div class="nav-item" onclick="showPage('wards')" id="nav-wards">
+                    <span class="nav-icon">🛏️</span> Ward Allotment
+                </div>
             </div>
         </nav>
 
@@ -163,34 +166,34 @@
                 <h1>Welcome back, <span id="welcomeName">Admin</span> 👋</h1>
             </div>
             <div class="stat-grid" id="statsGrid">
-                <div class="stat-card purple">
+                <div class="stat-card purple" id="statCard1" style="cursor:pointer;">
                     <div class="stat-header">
-                        <div><div class="stat-label">Total Patients</div><div class="stat-value" id="statPatients">-</div></div>
-                        <div class="stat-icon">👥</div>
+                        <div><div class="stat-label" id="labelStat1">Total Patients</div><div class="stat-value" id="statPatients">-</div></div>
+                        <div class="stat-icon" id="iconStat1">👥</div>
                     </div>
                 </div>
-                <div class="stat-card blue">
+                <div class="stat-card blue" id="statCard2" style="cursor:pointer;">
                     <div class="stat-header">
-                        <div><div class="stat-label">Total Doctors</div><div class="stat-value" id="statDoctors">-</div></div>
-                        <div class="stat-icon">🩺</div>
+                        <div><div class="stat-label" id="labelStat2">Total Doctors</div><div class="stat-value" id="statDoctors">-</div></div>
+                        <div class="stat-icon" id="iconStat2">🩺</div>
                     </div>
                 </div>
-                <div class="stat-card emerald">
+                <div class="stat-card emerald" id="statCard3" style="cursor:pointer;">
                     <div class="stat-header">
-                        <div><div class="stat-label">Appointments Today</div><div class="stat-value" id="statAppointments">-</div></div>
+                        <div><div class="stat-label" id="labelStat3">Appointments Today</div><div class="stat-value" id="statAppointments">-</div></div>
                         <div class="stat-icon">📅</div>
                     </div>
                 </div>
-                <div class="stat-card amber">
+                <div class="stat-card amber" id="statCard4" style="cursor:pointer;">
                     <div class="stat-header">
-                        <div><div class="stat-label">Pending Bills</div><div class="stat-value" id="statPending">-</div></div>
-                        <div class="stat-icon">💳</div>
+                        <div><div class="stat-label" id="labelStat4">Pending Bills</div><div class="stat-value" id="statPending">-</div></div>
+                        <div class="stat-icon" id="iconStat4">💳</div>
                     </div>
                 </div>
-                <div class="stat-card rose">
+                <div class="stat-card rose" id="statCard5" style="cursor:pointer;">
                     <div class="stat-header">
-                        <div><div class="stat-label">Low Stock Alerts</div><div class="stat-value" id="statLowStock">-</div></div>
-                        <div class="stat-icon">⚠️</div>
+                        <div><div class="stat-label" id="labelStat5">Low Stock Alerts</div><div class="stat-value" id="statLowStock">-</div></div>
+                        <div class="stat-icon" id="iconStat5">⚠️</div>
                     </div>
                 </div>
             </div>
@@ -267,7 +270,7 @@
             <div class="top-bar">
                 <h1>Appointment <span>Scheduling</span></h1>
                 <div class="top-bar-actions">
-                    <button class="btn btn-primary" onclick="showBookAppointment()">+ Book Appointment</button>
+                    <button class="btn btn-primary" id="bookApptBtn" onclick="showBookAppointment()">+ Book Appointment</button>
                 </div>
             </div>
             <div class="data-card">
@@ -290,7 +293,7 @@
             <div class="top-bar">
                 <h1>Medical <span>Records</span></h1>
                 <div class="top-bar-actions">
-                    <button class="btn btn-primary" onclick="showCreateRecord()">+ New Record</button>
+                    <button class="btn btn-primary" id="newRecordBtn" onclick="showCreateRecord()">+ New Record</button>
                 </div>
             </div>
             <div class="data-card">
@@ -300,9 +303,9 @@
                 <div class="data-card-body">
                     <table class="data-table">
                         <thead><tr>
-                            <th>Record ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Status</th><th>Date</th>
+                            <th>Record ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Status</th><th>Date</th><th>Actions</th>
                         </tr></thead>
-                        <tbody id="recordsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                        <tbody id="recordsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -313,7 +316,7 @@
             <div class="top-bar">
                 <h1>Pharmacy & <span>Inventory</span></h1>
                 <div class="top-bar-actions">
-                    <button class="btn btn-primary" onclick="showAddMedicine()">+ Add Medicine</button>
+                    <button class="btn btn-primary" id="addMedicineBtn" onclick="showAddMedicine()">+ Add Medicine</button>
                 </div>
             </div>
             <div class="data-card">
@@ -334,9 +337,9 @@
         <!-- ===== BILLING ===== -->
         <section id="page-billing" class="page-section">
             <div class="top-bar">
-                <h1>Billing & <span>Invoices</span></h1>
+                <h1>Billing & <span>Insurance</span></h1>
                 <div class="top-bar-actions">
-                    <button class="btn btn-primary" onclick="showCreateInvoice()">+ Generate Invoice</button>
+                    <button class="btn btn-primary" id="generateInvoiceBtn" onclick="showCreateInvoice()">+ Generate Invoice</button>
                 </div>
             </div>
             <div class="data-card">
@@ -349,6 +352,46 @@
                             <th>Bill ID</th><th>Patient</th><th>Total (₹)</th><th>Status</th><th>Date</th><th>Actions</th>
                         </tr></thead>
                         <tbody id="billingList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== WARD ALLOTMENT ===== -->
+        <section id="page-wards" class="page-section">
+            <div class="top-bar">
+                <h1>Ward <span>Allotment</span></h1>
+                <div class="top-bar-actions" id="wardActions">
+                    <button class="btn btn-primary" onclick="showAllotBed()">+ Allot Bed</button>
+                </div>
+            </div>
+
+            <!-- Ward Availability -->
+            <div class="data-card" style="margin-bottom:20px;">
+                <div class="data-card-header">
+                    <h3>Ward Overview</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>Ward ID</th><th>Name</th><th>Type</th><th>Floor</th><th>Total Beds</th><th>Available</th><th>Status</th>
+                        </tr></thead>
+                        <tbody id="wardsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Allotments -->
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h3>Current Allotments</h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr>
+                            <th>ID</th><th>Patient</th><th>Ward</th><th>Bed No.</th><th>ICU</th><th>Nurse</th><th>Admitted</th><th>Status</th><th id="wardActionsHeader">Actions</th>
+                        </tr></thead>
+                        <tbody id="allotmentsList"><tr><td colspan="9"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
             </div>

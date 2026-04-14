@@ -1,5 +1,6 @@
 package com.healthsync.controller;
 
+import com.healthsync.config.RoleGuard;
 import com.healthsync.model.*;
 import com.healthsync.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,10 @@ public class AppointmentController {
     @Autowired private SlotRepository slotRepo;
 
     @GetMapping
-    public List<Map<String, Object>> getAll() {
-        return apptRepo.findAll().stream().map(this::toMap).toList();
+    public ResponseEntity<?> getAll(@RequestHeader(value = "X-User-Role", required = false) String role) {
+        ResponseEntity<?> denied = RoleGuard.requireRole(role, "ADMINISTRATOR", "DOCTOR", "STAFF");
+        if (denied != null) return denied;
+        return ResponseEntity.ok(apptRepo.findAll().stream().map(this::toMap).toList());
     }
 
     @GetMapping("/{id}")

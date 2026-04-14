@@ -1,5 +1,6 @@
 package com.healthsync.controller;
 
+import com.healthsync.config.RoleGuard;
 import com.healthsync.factory.HealthSyncFactory;
 import com.healthsync.model.*;
 import com.healthsync.repository.*;
@@ -39,8 +40,10 @@ public class MedicalRecordController {
     // ─── Read endpoints ──────────────────────────────────────────────────
 
     @GetMapping
-    public List<Map<String, Object>> getAll() {
-        return recordRepo.findAll().stream().map(this::toMap).toList();
+    public ResponseEntity<?> getAll(@RequestHeader(value = "X-User-Role", required = false) String role) {
+        ResponseEntity<?> denied = RoleGuard.requireRole(role, "ADMINISTRATOR", "DOCTOR", "STAFF");
+        if (denied != null) return denied;
+        return ResponseEntity.ok(recordRepo.findAll().stream().map(this::toMap).toList());
     }
 
     @GetMapping("/{id}")
@@ -63,7 +66,11 @@ public class MedicalRecordController {
     // ─── Create — UC3 Activity Diagram: Doctor creates EMR ───────────────
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> create(
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestBody Map<String, String> body) {
+        ResponseEntity<?> denied = RoleGuard.requireRole(role, "DOCTOR", "ADMINISTRATOR");
+        if (denied != null) return denied;
         try {
             Patient patient = patientRepo.findById(body.get("patientId")).orElse(null);
             Doctor doctor = doctorRepo.findById(body.get("doctorId")).orElse(null);

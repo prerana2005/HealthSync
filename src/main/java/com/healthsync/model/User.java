@@ -34,7 +34,7 @@ public class User {
     private LocalDateTime createdAt;
 
     public enum RoleType {
-        PATIENT, DOCTOR, NURSE, ADMIN
+        PATIENT, DOCTOR, STAFF, ADMINISTRATOR
     }
 
     @PrePersist

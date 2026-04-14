@@ -1,5 +1,6 @@
 package com.healthsync.controller;
 
+import com.healthsync.config.RoleGuard;
 import com.healthsync.facade.BillingFacade;
 import com.healthsync.model.Invoice;
 import com.healthsync.repository.InvoiceRepository;
@@ -32,8 +33,10 @@ public class BillingController {
     @Autowired private InvoiceRepository invoiceRepo;
 
     @GetMapping
-    public List<Map<String, Object>> getAll() {
-        return invoiceRepo.findAll().stream().map(this::toMap).toList();
+    public ResponseEntity<?> getAll(@RequestHeader(value = "X-User-Role", required = false) String role) {
+        ResponseEntity<?> denied = RoleGuard.requireRole(role, "ADMINISTRATOR", "STAFF");
+        if (denied != null) return denied;
+        return ResponseEntity.ok(invoiceRepo.findAll().stream().map(this::toMap).toList());
     }
 
     @GetMapping("/{id}")
@@ -109,6 +112,10 @@ public class BillingController {
         m.put("taxAmount", i.getTaxAmount());
         m.put("totalAmount", i.getTotalAmount());
         m.put("paymentStatus", i.getPaymentStatus().name());
+        m.put("insuranceProvider", i.getInsuranceProvider());
+        m.put("insurancePolicyNo", i.getInsurancePolicyNo());
+        m.put("insuranceCoverage", i.getInsuranceCoverage());
+        m.put("claimStatus", i.getClaimStatus().name());
         m.put("generatedDate", i.getGeneratedDate() != null ? i.getGeneratedDate().toString() : null);
         m.put("paidDate", i.getPaidDate() != null ? i.getPaidDate().toString() : null);
         return m;
