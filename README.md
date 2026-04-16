@@ -333,6 +333,8 @@ users ──┬──► doctors ──► doctor_availability_slots
 
 > Run the app and log in with any of the demo credentials to explore:
 > - **Admin** — full dashboard, billing, ward management, user management
+<img width="2874" height="1622" alt="image" src="https://github.com/user-attachments/assets/dbb389b9-5a76-429b-b161-7290e4ff8e0a" />
+
 > - **Doctor** — patient list, EMR, lab tests, prescriptions
 > - **Patient** — book appointments, view records, pay bills, notification bell
 > - **Staff** — appointment booking, ward allotment, pharmacy, prescription dispensing
@@ -341,7 +343,7 @@ users ──┬──► doctors ──► doctor_availability_slots
 
 <div align="center">
 
-Built with ❤️ for **UE23CS352B: Object Oriented Analysis and Design**
+**UE23CS352B: Object Oriented Analysis and Design**
 
 *PES University · 2024–25*
 
