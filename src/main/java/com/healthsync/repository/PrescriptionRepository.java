@@ -9,6 +9,9 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Stri
     List<Prescription> findByPatientPatientId(String patientId);
     List<Prescription> findByStatus(Prescription.PrescriptionStatus status);
 
-    @Query("SELECT COALESCE(MAX(CAST(SUBSTRING(p.prescriptionId, 4) AS int)), 0) FROM Prescription p")
+    /** NEW — doctor can view all prescriptions they generated (Doctor's Prescriptions page view) */
+    List<Prescription> findByDoctorDoctorId(String doctorId);
+
+    @Query("SELECT COALESCE(MAX(CAST(SUBSTRING(p.prescriptionId, 3) AS int)), 0) FROM Prescription p")
     int findMaxPrescriptionId();
 }

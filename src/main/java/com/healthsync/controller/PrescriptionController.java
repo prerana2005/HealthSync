@@ -14,17 +14,28 @@ import java.util.*;
 /**
  * PrescriptionController — UC3: Generate E-Prescription (<<extend>> of Manage Medical Records)
  *
- * Closes the gap between the use case diagram ("Generate E-Prescription" extends UC3)
- * and the implementation.  A Doctor creates a prescription linked to a MedicalRecord;
- * the Observer pattern notifies the patient and the audit log records the action.
+ * UC3 Activity Diagram flow (from project diagrams):
+ *   Doctor → Write Prescription → Staff/Nurse → Send Prescription to Pharmacy → patient notified
+ *
+ * Two separate prescription concepts co-exist intentionally:
+ *   1. MedicalRecord.prescriptionDetails  — free-text doctor notes ("Tab. Aspirin 75mg once daily")
+ *      Entered inside the Create Medical Record modal. Quick clinical note. No formal ID.
+ *   2. Prescription entity (this controller) — formal E-Prescription object with unique ID (RX…),
+ *      PENDING → DISPENSED lifecycle, linked to MedicalRecord, triggers Observer notification.
+ *      Created via the 💊 Rx button on the Medical Records table, or via Prescriptions page.
+ *
+ * Who sees what on the Prescriptions page:
+ *   DOCTOR        → "My Generated Prescriptions" table (all Rx they wrote, any status)
+ *   STAFF / ADMIN → "Pending Dispensing" table (all PENDING Rx, Dispense button)
+ *   PATIENT       → "My Prescriptions" table (all Rx written for them)
  *
  * PATTERNS USED:
- *   Observer  (Behavioral): NotificationObserver.onEvent() — notifies patient when
- *     prescription is generated (state: PrescriptionAdded → sendToPharmacy() in state diagram).
- *   Singleton (Creational #2): AuditLogService — single instance audits every prescription event.
+ *   Observer  (Behavioral): notificationObserver.onEvent() — notifies patient on generation
+ *             (MedicalRecord state: PrescriptionAdded → do/generatePrescription() → do/sendToPharmacy())
+ *   Singleton (Creational #2): AuditLogService — single instance audits every Rx event.
  *
- * SOLID SRP : Only handles prescription HTTP concerns.
- * GRASP Low Coupling : no direct dependency on notification table.
+ * SOLID SRP  : Only handles prescription HTTP concerns.
+ * GRASP Low Coupling : No direct dependency on notification or audit tables in callers.
  */
 @RestController
 @RequestMapping("/api/prescriptions")
@@ -42,8 +53,12 @@ public class PrescriptionController {
     /** Observer (Behavioral) — decoupled notification delivery */
     @Autowired private NotificationObserver notificationObserver;
 
-    // ─── Read ────────────────────────────────────────────────────────────
+    // ─── Read endpoints ──────────────────────────────────────────────────────
 
+    /**
+     * PATIENT view — "My Prescriptions" table.
+     * Shows all prescriptions written for this patient, any status.
+     */
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<?> byPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(
@@ -52,8 +67,27 @@ public class PrescriptionController {
         );
     }
 
+    /**
+     * DOCTOR view — "My Generated Prescriptions" table.
+     * Shows all prescriptions this doctor has generated, any status.
+     * This fixes the blank page a doctor sees on the Prescriptions screen.
+     */
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<?> byDoctor(@PathVariable String doctorId) {
+        return ResponseEntity.ok(
+                prescriptionRepo.findByDoctorDoctorId(doctorId)
+                        .stream().map(this::toMap).toList()
+        );
+    }
+
+    /**
+     * STAFF / ADMIN view — "Pending Dispensing" table.
+     * Shows only PENDING prescriptions for the pharmacy dispensing queue.
+     * RoleGuard: STAFF and ADMINISTRATOR only.
+     */
     @GetMapping("/pending")
-    public ResponseEntity<?> pending(@RequestHeader(value = "X-User-Role", required = false) String role) {
+    public ResponseEntity<?> pending(
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
         ResponseEntity<?> denied = RoleGuard.requireRole(role, "ADMINISTRATOR", "STAFF");
         if (denied != null) return denied;
         return ResponseEntity.ok(
@@ -62,12 +96,21 @@ public class PrescriptionController {
         );
     }
 
-    // ─── Create — UC3: Doctor generates e-prescription ──────────────────
+    // ─── Create — UC3: Doctor generates e-prescription ──────────────────────
 
     /**
-     * Activity Diagram UC3: Doctor → Write Prescription → Send to Pharmacy.
-     * State Diagram: AddingNotes → writePrescription() [confirmed] → PrescriptionAdded
-     *                → do/generatePrescription() → do/sendToPharmacy().
+     * Called by:
+     *   - 💊 Rx button on Medical Records table row → pre-fills recordId + patientId
+     *   - "+ Generate Prescription" button on Prescriptions page → manual entry
+     *
+     * State Diagram (MedicalRecord): AddingNotes
+     *   → writePrescription() [confirmed] → PrescriptionAdded
+     *   → do/generatePrescription() → do/sendToPharmacy()
+     *
+     * After creation:
+     *   - Observer fires PRESCRIPTION notification to patient
+     *   - Singleton AuditLogService logs the action
+     *   - MedicalRecord state implicitly moves to UPDATED (doctor should update it separately)
      */
     @PostMapping
     public ResponseEntity<?> create(
@@ -83,7 +126,9 @@ public class PrescriptionController {
             Patient patient = patientRepo.findById(body.get("patientId")).orElse(null);
 
             if (record == null || doctor == null || patient == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Invalid record, doctor, or patient"));
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Invalid record ID, doctor ID, or patient ID. "
+                                + "Make sure the record exists and belongs to this patient."));
             }
 
             int nextId = prescriptionRepo.findMaxPrescriptionId() + 1;
@@ -95,7 +140,7 @@ public class PrescriptionController {
             presc.setStatus(Prescription.PrescriptionStatus.PENDING);
             prescriptionRepo.save(presc);
 
-            // Observer: notify patient — state PrescriptionAdded → sendToPharmacy()
+            // Observer (Behavioral): notify patient — state PrescriptionAdded → sendToPharmacy()
             notificationObserver.onEvent(
                     patient.getUser(),
                     Notification.NotifType.PRESCRIPTION,
@@ -105,7 +150,7 @@ public class PrescriptionController {
                             + presc.getPrescriptionId() + "). It has been sent to the pharmacy."
             );
 
-            // Singleton: audit
+            // Singleton (Creational #2): audit
             auditLogService.logAction(
                     doctor.getUser().getUserId(),
                     "GENERATE_PRESCRIPTION",
@@ -122,8 +167,13 @@ public class PrescriptionController {
         }
     }
 
-    // ─── Dispense — Pharmacy marks prescription as dispensed ─────────────
+    // ─── Dispense — Staff marks prescription as dispensed ────────────────────
 
+    /**
+     * Called from the "Dispense" button in the Staff/Admin Pending Dispensing table.
+     * Transitions Prescription: PENDING → DISPENSED.
+     * RoleGuard: STAFF and ADMINISTRATOR only (pharmacy staff action).
+     */
     @PutMapping("/{id}/dispense")
     public ResponseEntity<?> dispense(
             @PathVariable String id,
@@ -138,13 +188,13 @@ public class PrescriptionController {
 
             auditLogService.logAction(null, "DISPENSE_PRESCRIPTION",
                     "prescriptions", id,
-                    "Prescription " + id + " dispensed by pharmacy.");
+                    "Prescription " + id + " dispensed by pharmacy staff.");
 
             return ResponseEntity.ok(toMap(presc));
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // ─── DTO mapper ──────────────────────────────────────────────────────
+    // ─── DTO mapper ──────────────────────────────────────────────────────────
 
     private Map<String, Object> toMap(Prescription p) {
         Map<String, Object> m = new LinkedHashMap<>();

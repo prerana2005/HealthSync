@@ -341,11 +341,11 @@
                 </div>
             </div>
 
-            <!-- Pending Dispensing (Staff / Admin) -->
+            <!-- STAFF / ADMIN: Pending Dispensing queue -->
             <div class="data-card" style="margin-bottom:20px;">
                 <div class="data-card-header">
                     <h3>Pending Dispensing
-                        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px;">Staff / Admin</span>
+                        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px;">Staff / Admin — Pharmacy Queue</span>
                     </h3>
                 </div>
                 <div class="data-card-body">
@@ -356,8 +356,23 @@
                 </div>
             </div>
 
-            <!-- My Prescriptions (Patient view) -->
-            <div class="data-card" id="myPrescriptionsCard">
+            <!-- DOCTOR: My Generated Prescriptions (hidden for other roles) -->
+            <div class="data-card" id="doctorRxCard" style="margin-bottom:20px;display:none;">
+                <div class="data-card-header">
+                    <h3>My Generated Prescriptions
+                        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px;">Doctor view — all Rx you have written</span>
+                    </h3>
+                </div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr><th>Rx ID</th><th>Patient</th><th>Record</th><th>Issued</th><th>Status</th><th>Pharmacy</th></tr></thead>
+                        <tbody id="doctorRxList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PATIENT: My Prescriptions (hidden for other roles) -->
+            <div class="data-card" id="myPrescriptionsCard" style="display:none;">
                 <div class="data-card-header"><h3>My Prescriptions</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">

@@ -50,7 +50,57 @@ async function searchLabByRecord(id){const tb=document.getElementById('labRecord
 function showOrderLabTest(){showModal('Order Lab Test',labModalBody('',false),submitLabOrder);}
 function openLabTestModal(recordId){showModal('Order Lab Test',labModalBody(recordId,true),submitLabOrder);}
 function completeLabTest(id){showModal('Enter Lab Results','<div class="form-group"><label>Result Summary</label><textarea id="labResultText" rows="5" placeholder="Values, observations..."></textarea></div><p style="font-size:12px;color:var(--accent-emerald);margin-top:8px;">Patient will be auto-notified (FR-06)</p>',async()=>{const rs=document.getElementById('labResultText').value;if(!rs.trim()){alert('Please enter results.');return;}const res=await fetch(API+'/api/lab-tests/'+id+'/complete',{method:'PUT',headers:rH({'Content-Type':'application/json'}),body:JSON.stringify({resultSummary:rs})});if(res.ok){closeModal();loadLabTests();loadNotifications();alert('Results saved. Patient notified!');}else{const d=await res.json();alert(d.error||'Failed');}});}
-async function loadPrescriptions(){const role=currentUser.role;const canD=role==='ADMINISTRATOR'||role==='STAFF',isP=role==='PATIENT';if(canD){const pending=await fetchJson('/api/prescriptions/pending');const tb=document.getElementById('prescriptionPendingList');if(!pending||!pending.length){tb.innerHTML='<tr><td colspan="7" class="empty-state"><div class="empty-icon">💊</div><h3>No pending prescriptions</h3></td></tr>';}else{tb.innerHTML=pending.map(p=>'<tr><td><strong>'+p.prescriptionId+'</strong></td><td>'+p.patientName+'</td><td>'+p.doctorName+'</td><td>'+p.recordId+'</td><td>'+(p.issuedDate?p.issuedDate.substring(0,10):'-')+'</td><td>'+sb(p.status)+'</td><td>'+(canD?'<button class="btn btn-success btn-sm" onclick="dispensePrescription(\''+p.prescriptionId+'\')">Dispense</button>':'—')+'</td></tr>').join('');}}else{document.getElementById('prescriptionPendingList').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">Staff/Admin access required</td></tr>';}if(isP&&currentUser.patientId){const myRx=await fetchJson('/api/prescriptions/patient/'+currentUser.patientId);const tb=document.getElementById('prescriptionMyList');if(!myRx||!myRx.length){tb.innerHTML='<tr><td colspan="5" class="empty-state"><div class="empty-icon">💊</div><h3>No prescriptions yet</h3></td></tr>';}else{tb.innerHTML=myRx.map(p=>'<tr><td><strong>'+p.prescriptionId+'</strong></td><td>'+p.doctorName+'</td><td>'+p.recordId+'</td><td>'+(p.issuedDate?p.issuedDate.substring(0,10):'-')+'</td><td>'+sb(p.status)+'</td></tr>').join('');}}}
+async function loadPrescriptions(){
+  const role=currentUser.role;
+  const isStaffAdmin=role==='ADMINISTRATOR'||role==='STAFF';
+  const isDoctor=role==='DOCTOR';
+  const isPatient=role==='PATIENT';
+  const pendingTb=document.getElementById('prescriptionPendingList');
+  const myTb=document.getElementById('prescriptionMyList');
+  const myCard=document.getElementById('myPrescriptionsCard');
+  const docCard=document.getElementById('doctorRxCard');
+  const docTb=document.getElementById('doctorRxList');
+
+  // ── STAFF / ADMIN: show Pending Dispensing queue ──────────────────────
+  if(isStaffAdmin){
+    const pending=await fetchJson('/api/prescriptions/pending');
+    if(!pending||!pending.length){
+      pendingTb.innerHTML='<tr><td colspan="7" class="empty-state"><div class="empty-icon">💊</div><h3>No pending prescriptions to dispense</h3></td></tr>';
+    } else {
+      pendingTb.innerHTML=pending.map(p=>'<tr><td><strong>'+p.prescriptionId+'</strong></td><td>'+p.patientName+'</td><td>'+p.doctorName+'</td><td>'+p.recordId+'</td><td>'+(p.issuedDate?p.issuedDate.substring(0,10):'-')+'</td><td>'+sb(p.status)+'</td><td><button class="btn btn-success btn-sm" onclick="dispensePrescription(\''+p.prescriptionId+'\')">Dispense</button></td></tr>').join('');
+    }
+    if(myCard) myCard.style.display='none';
+    if(docCard) docCard.style.display='none';
+
+  // ── DOCTOR: show prescriptions they have generated ────────────────────
+  } else if(isDoctor && currentUser.doctorId){
+    pendingTb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">Dispensing queue is managed by pharmacy staff.</td></tr>';
+    if(myCard) myCard.style.display='none';
+    if(docCard) docCard.style.display='';
+    const myRx=await fetchJson('/api/prescriptions/doctor/'+currentUser.doctorId);
+    if(docTb){
+      if(!myRx||!myRx.length){
+        docTb.innerHTML='<tr><td colspan="6" class="empty-state"><div class="empty-icon">💊</div><h3>No prescriptions generated yet</h3><p style="color:var(--text-muted);font-size:13px;margin-top:8px;">Click \'💊 Rx\' on a Medical Record or use \'+ Generate Prescription\' above.</p></td></tr>';
+      } else {
+        docTb.innerHTML=myRx.map(p=>'<tr><td><strong>'+p.prescriptionId+'</strong></td><td>'+p.patientName+'</td><td>'+p.recordId+'</td><td>'+(p.issuedDate?p.issuedDate.substring(0,10):'-')+'</td><td>'+sb(p.status)+'</td><td>'+(p.status==='PENDING'?'<span style="font-size:12px;color:var(--text-muted);">Awaiting dispensing</span>':'<span class="badge badge-completed">Dispensed ✓</span>')+'</td></tr>').join('');
+      }
+    }
+
+  // ── PATIENT: show their own prescriptions ─────────────────────────────
+  } else if(isPatient && currentUser.patientId){
+    pendingTb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">Dispensing queue is managed by pharmacy staff.</td></tr>';
+    if(docCard) docCard.style.display='none';
+    if(myCard) myCard.style.display='';
+    const myRx=await fetchJson('/api/prescriptions/patient/'+currentUser.patientId);
+    if(myTb){
+      if(!myRx||!myRx.length){
+        myTb.innerHTML='<tr><td colspan="5" class="empty-state"><div class="empty-icon">💊</div><h3>No prescriptions yet</h3></td></tr>';
+      } else {
+        myTb.innerHTML=myRx.map(p=>'<tr><td><strong>'+p.prescriptionId+'</strong></td><td>'+p.doctorName+'</td><td>'+p.recordId+'</td><td>'+(p.issuedDate?p.issuedDate.substring(0,10):'-')+'</td><td>'+sb(p.status)+'</td></tr>').join('');
+      }
+    }
+  }
+}
 function rxModalBody(recordId,patientId,readOnly){const isD=currentUser.role==='DOCTOR';return '<div class="form-group"><label>Record ID</label><input type="text" id="rxRecordId" value="'+(recordId||'')+'" '+(readOnly?'readonly style="background:var(--bg-secondary);color:var(--text-muted);"':'')+' placeholder="e.g. REC00001"></div><div class="form-group"><label>Patient ID</label><input type="text" id="rxPatientId" value="'+(patientId||'')+'" '+(patientId&&readOnly?'readonly style="background:var(--bg-secondary);color:var(--text-muted);"':'')+' placeholder="e.g. PAT00001"></div><div class="form-group"><label>Doctor ID</label><input type="text" id="rxDoctorId" value="'+(isD?(currentUser.doctorId||''):'')+'" '+(isD?'readonly style="background:var(--bg-secondary);color:var(--text-muted);"':'')+' placeholder="e.g. DOC00001"></div><p style="font-size:12px;color:var(--accent-emerald);margin-top:8px;">Patient will be notified + prescription sent to pharmacy.</p>';}
 async function submitRx(){const rid=document.getElementById('rxRecordId').value.trim(),pid=document.getElementById('rxPatientId').value.trim(),did=document.getElementById('rxDoctorId').value.trim();if(!rid||!pid||!did){alert('Please fill all fields.');return;}const res=await fetch(API+'/api/prescriptions',{method:'POST',headers:rH({'Content-Type':'application/json'}),body:JSON.stringify({recordId:rid,patientId:pid,doctorId:did})});if(res.ok){const data=await res.json();closeModal();loadPrescriptions();loadNotifications();alert('E-Prescription '+data.prescriptionId+' generated!');}else{const d=await res.json();alert(d.error||'Failed');}}
 function showGeneratePrescription(){showModal('Generate E-Prescription',rxModalBody('','',false),submitRx);}
