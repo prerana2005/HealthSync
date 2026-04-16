@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="HealthSync — Integrated Hospital Management System for modern healthcare facilities">
     <title>HealthSync — Hospital Management System</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
@@ -28,12 +27,10 @@
                 <label>Password</label>
                 <input type="password" id="loginPassword" placeholder="Enter your password" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-                Sign In
-            </button>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
         </form>
-        <p style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:13px;">
-            New patient? <a href="#" onclick="showRegister()" style="color:var(--accent-purple); text-decoration:none; font-weight:600;">Register here</a>
+        <p style="text-align:center;margin-top:20px;color:var(--text-muted);font-size:13px;">
+            New patient? <a href="#" onclick="showRegister()" style="color:var(--accent-purple);text-decoration:none;font-weight:600;">Register here</a>
         </p>
     </div>
 </div>
@@ -84,8 +81,8 @@
             </div>
             <button type="submit" class="btn btn-primary btn-block">Register</button>
         </form>
-        <p style="text-align:center; margin-top:20px; color:var(--text-muted); font-size:13px;">
-            Already registered? <a href="#" onclick="showLogin()" style="color:var(--accent-purple); text-decoration:none; font-weight:600;">Sign in</a>
+        <p style="text-align:center;margin-top:20px;color:var(--text-muted);font-size:13px;">
+            Already registered? <a href="#" onclick="showLogin()" style="color:var(--accent-purple);text-decoration:none;font-weight:600;">Sign in</a>
         </p>
     </div>
 </div>
@@ -127,12 +124,18 @@
                 <div class="nav-item" onclick="showPage('records')" id="nav-records">
                     <span class="nav-icon">📋</span> Medical Records
                 </div>
+                <div class="nav-item" onclick="showPage('labtests')" id="nav-labtests">
+                    <span class="nav-icon">🧪</span> Lab Tests
+                </div>
+                <div class="nav-item" onclick="showPage('prescriptions')" id="nav-prescriptions">
+                    <span class="nav-icon">💊</span> Prescriptions
+                </div>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-title">Administration</div>
                 <div class="nav-item" onclick="showPage('pharmacy')" id="nav-pharmacy">
-                    <span class="nav-icon">💊</span> Pharmacy
+                    <span class="nav-icon">🏪</span> Pharmacy
                 </div>
                 <div class="nav-item" onclick="showPage('billing')" id="nav-billing">
                     <span class="nav-icon">💳</span> Billing
@@ -151,13 +154,13 @@
                     <div class="role" id="userRole">Administrator</div>
                 </div>
             </div>
-            <div class="nav-item" onclick="logout()" style="margin-top:8px; color:var(--accent-rose);">
+            <div class="nav-item" onclick="logout()" style="margin-top:8px;color:var(--accent-rose);">
                 <span class="nav-icon">🚪</span> Sign Out
             </div>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
 
         <!-- ===== DASHBOARD ===== -->
@@ -165,7 +168,7 @@
             <div class="top-bar">
                 <h1>Welcome back, <span id="welcomeName">Admin</span> 👋</h1>
             </div>
-            <div class="stat-grid" id="statsGrid">
+            <div class="stat-grid">
                 <div class="stat-card purple" id="statCard1" style="cursor:pointer;">
                     <div class="stat-header">
                         <div><div class="stat-label" id="labelStat1">Total Patients</div><div class="stat-value" id="statPatients">-</div></div>
@@ -197,16 +200,11 @@
                     </div>
                 </div>
             </div>
-
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>Recent Appointments</h3>
-                </div>
+                <div class="data-card-header"><h3>Recent Appointments</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th>
-                        </tr></thead>
+                        <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
                         <tbody id="dashAppointments"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -225,14 +223,10 @@
                 </div>
             </div>
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>All Patients</h3>
-                </div>
+                <div class="data-card-header"><h3>All Patients</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>Patient ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Blood Group</th><th>Actions</th>
-                        </tr></thead>
+                        <thead><tr><th>Patient ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Blood Group</th><th>Actions</th></tr></thead>
                         <tbody id="patientsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -251,14 +245,10 @@
                 </div>
             </div>
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>All Doctors</h3>
-                </div>
+                <div class="data-card-header"><h3>All Doctors</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>Doctor ID</th><th>Name</th><th>Specialization</th><th>Department</th><th>Fee (₹)</th><th>Status</th>
-                        </tr></thead>
+                        <thead><tr><th>Doctor ID</th><th>Name</th><th>Specialization</th><th>Department</th><th>Fee (₹)</th><th>Status</th></tr></thead>
                         <tbody id="doctorsList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -274,14 +264,10 @@
                 </div>
             </div>
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>All Appointments</h3>
-                </div>
+                <div class="data-card-header"><h3>All Appointments</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
-                        </tr></thead>
+                        <thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody id="appointmentsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -297,15 +283,86 @@
                 </div>
             </div>
             <div class="data-card">
+                <div class="data-card-header"><h3>Electronic Medical Records (EMR)</h3></div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr><th>Record ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                        <tbody id="recordsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== LAB TESTS — FR-06 / UC3 Activity Diagram ===== -->
+        <section id="page-labtests" class="page-section">
+            <div class="top-bar">
+                <h1>Lab <span>Tests</span></h1>
+                <div class="top-bar-actions" id="labActionsHeader">
+                    <button class="btn btn-primary" id="orderLabBtn" onclick="showOrderLabTest()">+ Order Lab Test</button>
+                </div>
+            </div>
+
+            <!-- Search by Record ID -->
+            <div class="data-card" style="margin-bottom:20px;">
+                <div class="data-card-header"><h3>Search by Medical Record</h3></div>
+                <div class="data-card-body" style="padding:16px 24px;">
+                    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;">
+                        <input type="text" id="labRecordSearch" placeholder="Enter Record ID e.g. REC00001"
+                            style="flex:1;padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;outline:none;">
+                        <button class="btn btn-primary btn-sm" onclick="searchLabByRecord(document.getElementById('labRecordSearch').value.trim())">Search</button>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>#</th><th>Patient</th><th>Test Name</th><th>Result Summary</th><th>Result Date</th><th>Status</th><th>Notified</th></tr></thead>
+                        <tbody id="labRecordList">
+                            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px;">Enter a Record ID above to view associated lab tests</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Tests Queue -->
+            <div class="data-card">
+                <div class="data-card-header"><h3>Pending Lab Tests Queue</h3></div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr><th>#</th><th>Patient</th><th>Test Name</th><th>Ordered By</th><th>Ordered Date</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="labPendingList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PRESCRIPTIONS — UC3 Generate E-Prescription (<<extend>>) ===== -->
+        <section id="page-prescriptions" class="page-section">
+            <div class="top-bar">
+                <h1>E-<span>Prescriptions</span></h1>
+                <div class="top-bar-actions">
+                    <button class="btn btn-primary" id="newPrescriptionBtn" onclick="showGeneratePrescription()">+ Generate Prescription</button>
+                </div>
+            </div>
+
+            <!-- Pending Dispensing (Staff / Admin) -->
+            <div class="data-card" style="margin-bottom:20px;">
                 <div class="data-card-header">
-                    <h3>Electronic Medical Records</h3>
+                    <h3>Pending Dispensing
+                        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px;">Staff / Admin</span>
+                    </h3>
                 </div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>Record ID</th><th>Patient</th><th>Doctor</th><th>Diagnosis</th><th>Status</th><th>Date</th><th>Actions</th>
-                        </tr></thead>
-                        <tbody id="recordsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                        <thead><tr><th>Rx ID</th><th>Patient</th><th>Doctor</th><th>Record</th><th>Issued</th><th>Status</th><th id="rxActionsHeader">Actions</th></tr></thead>
+                        <tbody id="prescriptionPendingList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- My Prescriptions (Patient view) -->
+            <div class="data-card" id="myPrescriptionsCard">
+                <div class="data-card-header"><h3>My Prescriptions</h3></div>
+                <div class="data-card-body">
+                    <table class="data-table">
+                        <thead><tr><th>Rx ID</th><th>Doctor</th><th>Record</th><th>Issued</th><th>Status</th></tr></thead>
+                        <tbody id="prescriptionMyList"><tr><td colspan="5"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -314,20 +371,16 @@
         <!-- ===== PHARMACY ===== -->
         <section id="page-pharmacy" class="page-section">
             <div class="top-bar">
-                <h1>Pharmacy & <span>Inventory</span></h1>
+                <h1>Pharmacy &amp; <span>Inventory</span></h1>
                 <div class="top-bar-actions">
                     <button class="btn btn-primary" id="addMedicineBtn" onclick="showAddMedicine()">+ Add Medicine</button>
                 </div>
             </div>
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>Medicine Inventory</h3>
-                </div>
+                <div class="data-card-header"><h3>Medicine Inventory</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>ID</th><th>Medicine</th><th>Generic Name</th><th>Stock</th><th>Price (₹)</th><th>Expiry</th><th>Status</th><th>Actions</th>
-                        </tr></thead>
+                        <thead><tr><th>ID</th><th>Medicine</th><th>Generic Name</th><th>Stock</th><th>Price (₹)</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
                         <tbody id="pharmacyList"><tr><td colspan="8"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -337,20 +390,16 @@
         <!-- ===== BILLING ===== -->
         <section id="page-billing" class="page-section">
             <div class="top-bar">
-                <h1>Billing & <span>Insurance</span></h1>
+                <h1>Billing &amp; <span>Insurance</span></h1>
                 <div class="top-bar-actions">
                     <button class="btn btn-primary" id="generateInvoiceBtn" onclick="showCreateInvoice()">+ Generate Invoice</button>
                 </div>
             </div>
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>All Invoices</h3>
-                </div>
+                <div class="data-card-header"><h3>All Invoices</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>Bill ID</th><th>Patient</th><th>Total (₹)</th><th>Status</th><th>Date</th><th>Actions</th>
-                        </tr></thead>
+                        <thead><tr><th>Bill ID</th><th>Patient</th><th>Total (₹)</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
                         <tbody id="billingList"><tr><td colspan="6"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -365,32 +414,20 @@
                     <button class="btn btn-primary" onclick="showAllotBed()">+ Allot Bed</button>
                 </div>
             </div>
-
-            <!-- Ward Availability -->
             <div class="data-card" style="margin-bottom:20px;">
-                <div class="data-card-header">
-                    <h3>Ward Overview</h3>
-                </div>
+                <div class="data-card-header"><h3>Ward Overview</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>Ward ID</th><th>Name</th><th>Type</th><th>Floor</th><th>Total Beds</th><th>Available</th><th>Status</th>
-                        </tr></thead>
+                        <thead><tr><th>Ward ID</th><th>Name</th><th>Type</th><th>Floor</th><th>Total Beds</th><th>Available</th><th>Status</th></tr></thead>
                         <tbody id="wardsList"><tr><td colspan="7"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- Active Allotments -->
             <div class="data-card">
-                <div class="data-card-header">
-                    <h3>Current Allotments</h3>
-                </div>
+                <div class="data-card-header"><h3>Current Allotments</h3></div>
                 <div class="data-card-body">
                     <table class="data-table">
-                        <thead><tr>
-                            <th>ID</th><th>Patient</th><th>Ward</th><th>Bed No.</th><th>ICU</th><th>Nurse</th><th>Admitted</th><th>Status</th><th id="wardActionsHeader">Actions</th>
-                        </tr></thead>
+                        <thead><tr><th>ID</th><th>Patient</th><th>Ward</th><th>Bed No.</th><th>ICU</th><th>Nurse</th><th>Admitted</th><th>Status</th><th id="wardActionsHeader">Actions</th></tr></thead>
                         <tbody id="allotmentsList"><tr><td colspan="9"><div class="spinner"></div></td></tr></tbody>
                     </table>
                 </div>
@@ -400,7 +437,7 @@
     </main>
 </div>
 
-<!-- =============== MODAL CONTAINER =============== -->
+<!-- Modal Container -->
 <div id="modalContainer" class="hidden"></div>
 
 <script src="js/app.js"></script>

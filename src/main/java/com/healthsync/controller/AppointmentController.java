@@ -162,6 +162,31 @@ public class AppointmentController {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
+    // ─── Follow-up / Reschedule — State Diagram: COMPLETED → FOLLOW_UP ──
+    /**
+     * Marks an appointment as FOLLOW_UP, indicating a new appointment
+     * should be booked. Aligns with the Appointment State Diagram which
+     * shows COMPLETED → archive → CLOSED, or a follow-up path back to
+     * SCHEDULED via a new booking.
+     */
+    @PutMapping("/{id}/follow-up")
+    public ResponseEntity<?> followUp(@PathVariable String id) {
+        return apptRepo.findById(id).map(appt -> {
+            appt.setStatus(Appointment.AppointmentStatus.FOLLOW_UP);
+            apptRepo.save(appt);
+            return ResponseEntity.ok(toMap(appt));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // ─── Close — State Diagram: CANCELLED / COMPLETED → CLOSED ──────────
+    @PutMapping("/{id}/close")
+    public ResponseEntity<?> close(@PathVariable String id) {
+        return apptRepo.findById(id).map(appt -> {
+            appt.setStatus(Appointment.AppointmentStatus.CLOSED);
+            apptRepo.save(appt);
+            return ResponseEntity.ok(toMap(appt));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 
     private Map<String, Object> toMap(Appointment a) {
         Map<String, Object> m = new LinkedHashMap<>();

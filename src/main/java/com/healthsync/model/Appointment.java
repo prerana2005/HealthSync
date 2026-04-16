@@ -44,8 +44,37 @@ public class Appointment {
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;
 
+    /**
+     * AppointmentStatus — aligned with Appointment Object State Diagram:
+     *
+     *   CREATED             → initial state after request (maps to "Created")
+     *   PENDING_CONFIRMATION → availability check in progress ("PendingConfirmation")
+     *   SCHEDULED           → slot confirmed ("Scheduled")
+     *   IN_CONSULTATION     → consultation start ("InProgress")
+     *   RESCHEDULED         → change request + new slot assigned ("Rescheduled")
+     *   COMPLETED           → consultation done ("Completed")
+     *   CANCELLED           → cancelled event ("Cancelled")
+     *   WAITLISTED          → no slots available, patient on waitlist
+     *   CLOSED              → archived final state ("Closed")
+     *   FOLLOW_UP           → follow-up appointment scheduled
+     *
+     * State Diagram path:
+     *   CREATED → PENDING_CONFIRMATION → SCHEDULED → IN_CONSULTATION → COMPLETED → CLOSED
+     *                                 ↘ RESCHEDULED ↗
+     *                                 ↘ CANCELLED → CLOSED
+     *                                 ↘ WAITLISTED (slot unavailable)
+     */
     public enum AppointmentStatus {
-        SCHEDULED, IN_CONSULTATION, COMPLETED, CANCELLED, WAITLISTED, FOLLOW_UP
+        CREATED,
+        PENDING_CONFIRMATION,
+        SCHEDULED,
+        IN_CONSULTATION,
+        RESCHEDULED,
+        COMPLETED,
+        CANCELLED,
+        WAITLISTED,
+        CLOSED,
+        FOLLOW_UP
     }
 
     @PrePersist
