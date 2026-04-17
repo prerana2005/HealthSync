@@ -333,11 +333,17 @@ users ──┬──► doctors ──► doctor_availability_slots
 
 > Run the app and log in with any of the demo credentials to explore:
 > - **Admin** — full dashboard, billing, ward management, user management
-<img width="2874" height="1622" alt="image" src="https://github.com/user-attachments/assets/dbb389b9-5a76-429b-b161-7290e4ff8e0a" />
+<img width="959" height="492" alt="image" src="https://github.com/user-attachments/assets/ed3bb6d7-8c96-4488-9020-a6ee48c05d99" />
 
 > - **Doctor** — patient list, EMR, lab tests, prescriptions
+<img width="958" height="527" alt="image" src="https://github.com/user-attachments/assets/024456f5-a02a-424e-804a-a240591bde3c" />
+
 > - **Patient** — book appointments, view records, pay bills, notification bell
+<img width="1917" height="998" alt="image" src="https://github.com/user-attachments/assets/6821e54d-625c-4732-8e7e-a5bb635f60f6" />
+
 > - **Staff** — appointment booking, ward allotment, pharmacy, prescription dispensing
+<img width="1914" height="974" alt="image" src="https://github.com/user-attachments/assets/c72383cd-0d8a-4ff7-8512-8938d1d0b1c4" />
+
 
 ---
 
